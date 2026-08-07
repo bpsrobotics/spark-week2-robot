@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.subsystems.Intake
+import frc.robot.subsystems.TankDrive
 import kotlin.math.absoluteValue
 import kotlin.math.pow
 import kotlin.math.sign
@@ -12,7 +13,6 @@ import kotlin.math.sign
 object OI : SubsystemBase() {
     object Constants {
         const val DRIVER_CONTROLLER_PORT = 0
-        const val OPERATOR_CONTROLLER_PORT = 1
     }
 
     private const val DEADZONE_THRESHOLD = 0.1
@@ -35,12 +35,7 @@ object OI : SubsystemBase() {
         return output
     }
 
-    @JvmName("process1")
-    fun Double.process(deadzone: Double = DEADZONE_THRESHOLD, power: Double) =
-        process(this, deadzone, power)
-
     val driverController = CommandXboxController(Constants.DRIVER_CONTROLLER_PORT)
-    val operatorController = CommandXboxController(Constants.OPERATOR_CONTROLLER_PORT)
 
     val forward
         get() = -process(driverController.leftY, power = 1.5)
@@ -66,6 +61,21 @@ object OI : SubsystemBase() {
 
         driverController.a().whileTrue(Intake.runCommand(intakePower))
         driverController.b().whileTrue(Intake.runCommand(outtakePower))
+
+        val driveSpeedFactor = {
+            MathUtil.interpolate(
+                TankDrive.Constants.MAX_SPEED_FACTOR,
+                TankDrive.Constants.MIN_SPEED_FACTOR,
+                driverController.leftTriggerAxis,
+            )
+        }
+        driverController
+            .leftTrigger(0.01)
+            .whileTrue(
+                TankDrive.run {
+                    TankDrive.arcadeDrive(forward, rotation * 0.5, driveSpeedFactor())
+                }
+            )
     }
 
     override fun periodic() {

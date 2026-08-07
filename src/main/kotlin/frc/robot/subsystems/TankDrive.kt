@@ -16,6 +16,8 @@ object TankDrive : SubsystemBase() {
         const val LEFT_FOLLOWER_ID = 11
         const val RIGHT_LEADER_ID = 12
         const val RIGHT_FOLLOWER_ID = 13
+        const val MAX_SPEED_FACTOR = 1.0
+        const val MIN_SPEED_FACTOR = 0.25
     }
 
     private fun SparkMaxConfig.defaults() = apply {
@@ -34,11 +36,13 @@ object TankDrive : SubsystemBase() {
             defaults()
             inverted(false)
         }
+    @Suppress("unused")
     private val leftFollower =
         SparkWrapper(Constants.LEFT_FOLLOWER_ID, MotorType.kBrushed) {
             defaults()
             follow(Constants.LEFT_LEADER_ID)
         }
+    @Suppress("unused")
     private val rightFollower =
         SparkWrapper(Constants.RIGHT_FOLLOWER_ID, MotorType.kBrushed) {
             defaults()
@@ -47,7 +51,7 @@ object TankDrive : SubsystemBase() {
 
     private var speedFactor by DashboardNumber(1.0, "SmartDashboard/TankDrive", "speedFactor")
 
-    fun arcadeDrive(forward: Double, rotation: Double) {
+    fun arcadeDrive(forward: Double, rotation: Double, slowmodeFactor: Double = 1.0) {
         val left = forward + rotation
         val right = forward - rotation
         val maxMag = max(abs(left), abs(right))
@@ -55,10 +59,11 @@ object TankDrive : SubsystemBase() {
         SmartDashboard.putNumber("TankDrive/arcadeDrive/left", left)
         SmartDashboard.putNumber("TankDrive/arcadeDrive/right", right)
         SmartDashboard.putNumber("TankDrive/arcadeDrive/maxMag", maxMag)
-        leftLeader.set(left / denom * speedFactor)
-        rightLeader.set(right / denom * speedFactor)
+        leftLeader.set(left / denom * slowmodeFactor * speedFactor)
+        rightLeader.set(right / denom * slowmodeFactor * speedFactor)
     }
 
+    @Suppress("unused")
     fun stop() {
         leftLeader.stopMotor()
         rightLeader.stopMotor()

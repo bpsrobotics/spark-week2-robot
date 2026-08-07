@@ -4,7 +4,6 @@ package frc.robot.utils
 
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.units.Measure
-import edu.wpi.first.units.Unit as WpiUnit
 import edu.wpi.first.units.Units
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.units.measure.AngularAcceleration
@@ -19,6 +18,7 @@ import edu.wpi.first.units.measure.Mass
 import edu.wpi.first.units.measure.Power
 import edu.wpi.first.units.measure.Time
 import kotlin.math.PI
+import edu.wpi.first.units.Unit as WpiUnit
 
 fun <U : WpiUnit> Measure<U>.convert(unit: U): Double = `in`(unit)
 

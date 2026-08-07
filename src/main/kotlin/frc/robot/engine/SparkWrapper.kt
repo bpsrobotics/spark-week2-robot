@@ -39,6 +39,7 @@ class SparkWrapper(
     val velocity
         get() = (motor?.encoder?.velocity ?: 0.0).RPM
 
+    @Suppress("MemberVisibilityCanBePrivate", "unused")
     val outputCurrent
         get() = (motor?.outputCurrent ?: 0.0)
 

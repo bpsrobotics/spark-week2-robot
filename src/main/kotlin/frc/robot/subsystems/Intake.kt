@@ -29,6 +29,5 @@ object Intake : SubsystemBase() {
         motor.stopMotor()
     }
 
-    fun runCommand(power: () -> Double): Command =
-        runEnd({ motor.set(power()) }, { motor.stopMotor() })
+    fun runCommand(power: () -> Double): Command = runEnd({ run(power()) }, ::stop)
 }
